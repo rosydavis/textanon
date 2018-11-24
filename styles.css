@@ -1,0 +1,45 @@
+body
+{
+    font-family: "Georgia", serif;
+    font-size: 14pt;
+    margin: 3em 5em;
+    line-height: 140%;
+}
+h1, h2, h3, h4, h5, h6
+{
+    color: hsla(191, 100%, 34%, 1);
+    font-family: "Lucida Grande", sans-serif;
+    text-align: center;
+    margin-top: 2em;
+    margin-bottom: 1em;
+}
+form
+{
+    text-align: center;
+}
+footer
+{
+    margin-top: 4em;
+    font-size: 0.85em;
+    text-align: center;
+}
+textarea
+{
+    margin-left: 10%;
+    margin-right: 10%;
+    margin-bottom: 4em;
+    width: 80%;
+    height: 15em;
+    font-family: "Lucida Grande", sans-serif;
+    font-size: 12pt;
+}
+a, a:link, a:visited
+{
+    color: hsla(71, 100%, 34%, 1);
+    text-decoration: none;
+}
+a:active, a:hover
+{
+    color: hsla(311, 100%, 34%, 1);
+    border-bottom: 1px dotted hsla(311, 100%, 34%, 1);
+}

@@ -1,0 +1,148 @@
+<html>
+    <head>
+        <title>Text Anonymizer</title>
+        <link rel="stylesheet" type="text/css" href="styles.css">
+    </head>
+    <body>
+        <h1>No-Upload Text Anonymizer</h1>
+
+        <p>This utility takes whatever text you paste in and jumbles it
+        (replaces every alphabet character with a new, random alphabet
+        character). It works in pure JavaScript, on <em>your</em> computer,
+        and doesn't cache or remember or upload anything. You can use this
+        script for things like anonymizing your NaNoWriMo novel, if you're
+        ready to validate but it weirds you out to upload your work onto a
+        server you don't have control over.</p>
+
+        <h2>How To Use</h2>
+
+        <p>Paste your text into the first text box, then copy the text from
+        the second text box and put it wherever you need the anonymized
+        text.</p>
+
+        <h2>Caveats</h2>
+
+        <p>Right now, this is designed for English text and only does the
+        replacement for pure ASCII  characters, i.e., A-Z and a-z, with no
+        accents. Also, the memory usage and speed of your browser are known
+        limitations, since there's no server usage at all: in other words, if
+        what you paste in is long, your browser may hang up for a second or
+        two while it processes, or possibly even crash.  ¯\_(ツ)_/¯ </p>
+
+
+        <form>
+            <p><textarea id = "input">Put your text to be anonymized here.</textarea></p>
+
+            <p><textarea id = "output">Here's where the anonymized text will appear, as soon as you start editing the box above. (Add a space to watch it in action!)</textarea></p>
+        </form>
+
+
+        <small>    
+
+            <h3>I Looked At Your Code. Why You Didn't Do It This Other, Better
+            Way?</h3>
+
+            <p>The short answer is: I wrote the utility in about 15 minutes on
+            the morning I wanted to validate my NaNoWriMo results. My primary
+            goal was getting something that did the thing without using up a
+            lot of my time. Also, I'm not a JS dev, so I was really  winging
+            it on the 'idiomatic JavaScript' front.</p>
+
+            <p>That said, if "this other, better way" is a single random
+            generation pass through the alphabet, which I then reused for the
+            whole chunk of text: yes, you're right, that would be faster, but
+            I didn't do it that way because that's a <a href =
+            "https://en.wikipedia.org/wiki/Substitution_cipher">substitution
+            cipher</a>, and an eight-year-old with a sheet of paper can
+            reverse a  substitution cipher. On something novel-
+            length—<em>especially</em> in a computer context—that would
+            basically be exactly equivalent to just pasting your raw text
+            over, which is what I didn't want to do.</p>
+
+            <p>If you're wondering why I kept the general sentence and word
+            forms, i.e. lowercase letters replaced by other lowercase letters,
+            uppercase letters replaced by uppercase letters, and punctuation
+            and spaces left untouched, it's because (a) I didn't want to run
+            the risk of accidentally lowering my word count by messing with
+            word boundaries and (b) I know from an earlier string-garbling
+            project that it scrapes against something really primal in your
+            brain to look at a very large unit of text that looks like a
+            ransom note from a penny dreadful, or otherwise doesn't obey the
+            rules you expect for things like capitalization and punctuation. I
+            don't have any idea why this happens; I just know that—for me at
+            least—that's true, and also very annoying. The text that you get
+            back from the anonymizer should look <em>basically okay</em>; the
+            phonetics will be garbage, but hopefully it'll have less of that
+            nails-on-chalkboard effect that you get from looking at a wall of
+            text that is just <em>profoundly wrong</em>.</p>
+
+        </small>
+
+        <footer>Copyright &copy; 2018 <a href = "https://github.com/rosydavis">Rosy Davis</a> and released under the <a href = "LICENSE">GPL</a>.
+        </footer>
+    </body>
+    <script>
+        // ****************** LOCK OUTPUT BOX FOR WRITING ********************
+        document.getElementById("output").readOnly = true;
+
+        // ***************** SET UP CHARACTER REPLACEMENTS *******************
+        // range() and characterRange() from https://bit.ly/2Al2fGx
+        function range(size, startAt = 0) {
+            return [...Array(size).keys()].map(i => i + startAt);
+        }
+        function characterRange(startChar, endChar) {
+            return String.fromCharCode(...range(endChar.charCodeAt(0) -
+                    startChar.charCodeAt(0), startChar.charCodeAt(0)))
+        }
+        var replacements = new Set();
+        // Flag uppercase ASCII as characters to be replaced
+        replacements.add(new Set(characterRange("A",String.fromCharCode("Z".charCodeAt(0) + 1))))
+        // Flag lowercase ASCII as characters to be replaced
+        replacements.add(new Set(characterRange("a",String.fromCharCode("z".charCodeAt(0) + 1))))
+        // console.log(replacements)
+
+        // Define the character replacement functions
+        function findReplacementSet(ch) {
+            rs = null
+            replacements.forEach(replacementSet => {
+                if (replacementSet.has(ch)) {
+                    // console.log(replacementSet);
+                    // console.log("=> contains '" + ch + "'");
+                    rs = replacementSet;
+                }
+            });
+            return rs
+        }
+        function charReplace (ch) {
+            rs = findReplacementSet(ch)
+            if (rs != null) {
+                // Replace this character.
+                let rsa = Array.from(rs);
+                itemIndex = Math.floor(Math.random() * rsa.length); 
+                // console.log("Using [" + rsa + "] to replace '" + 
+                //             ch + "' with '" + rsa[itemIndex] + "'.")
+                return rsa[itemIndex]
+            }
+            else {
+                // console.log("Leaving '" + ch + "' alone.")
+                return ch
+            }
+        }
+        function strReplace (s) {
+            var newS = ""
+            for (var i = 0; i < s.length; i++) {
+                newS += charReplace(s.charAt(i))
+            }
+            return newS
+        }
+
+        // ******************** CONNECT TO FORM ELEMENTS *********************
+        function echoAnonymized() {
+            document.getElementById("output").value = strReplace (document.getElementById("input").value)
+        }
+        document.getElementById("input").onkeyup = echoAnonymized
+        document.getElementById("input").onchange = echoAnonymized
+        
+         
+    </script>
+</html>
